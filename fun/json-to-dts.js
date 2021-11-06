@@ -15,6 +15,10 @@ function isString(o) {
   return typeof o === "string";
 }
 
+function isObject(o) {
+  return typeof o === "object";
+}
+
 function isArray(o) {
   return Array.isArray(o);
 }
@@ -29,7 +33,7 @@ export function sort(o) {
 
 export function consolidate(types) {
   if (!types.length) return false;
-  if (types.length < 2) return types;
+  if (1 === types.length) return types[0];
   const result = {};
   for (let i = 0; i < types.length; i++) {
     Object.keys(types[i]).forEach((key) => {
@@ -46,14 +50,15 @@ export function consolidate(types) {
         return;
       }
       console.log("consolidate", key, result[key], newType);
-      consolidate([result[key], types[i][key]]);
+      result[key] = consolidate([result[key], types[i][key]]);
     });
   }
-  return isString(result) ? result : sort(result);
+  return isObject(result) ? sort(result) : result;
 }
 
 export function unionTypes(types) {
   if (!types?.length) return "any";
+
   const prims = unique(types.filter((t) => typeof t === "string"));
 
   const complex = consolidate(types.filter((t) => typeof t === "object"));
@@ -61,7 +66,6 @@ export function unionTypes(types) {
   if (complex) prims.push(stringify(complex));
 
   const items = prims;
-  if (items.length === 1) return items[0];
   if (items.length > 3) return "any";
   return items.join("|");
 }
