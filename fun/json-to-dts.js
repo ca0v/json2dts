@@ -67,7 +67,7 @@ export function unionTypes(types) {
 
   const items = prims;
   if (items.length > 3) return "any";
-  return items.join("|");
+  return items.sort().join("|");
 }
 
 export function typeOf(o) {
@@ -93,7 +93,7 @@ export function typeOf(o) {
       keys.forEach((k) => {
         result[k] = typeOf(o[k]);
       });
-      return result;
+      return stringify(result);
     }
     default:
       return "unknown";
