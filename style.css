@@ -6,19 +6,18 @@ h2 {
 body {
   color: #ccc;
   background-color: #000;
+  padding: 1em;
 }
 
 textarea {
+  display: block;
   color: #2b2;
   background-color: #111;
+  min-height: 20em;
+  max-height: 40em;
+  min-width: 24em;
   overflow: hidden;
-}
-
-.panel {
-  position: absolute;
-  width: 47%;
-  top: 4em;
-  bottom: 4em;
+  padding: 1em;
 }
 
 .left {
@@ -29,13 +28,6 @@ textarea {
   right: 2em;
 }
 
-textarea {
-  position: absolute;
-  width: 100%;
-  top: 2em;
-  left: 0;
-  bottom: 0;
-}
 #log {
   display: none;
 }

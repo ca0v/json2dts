@@ -2,9 +2,12 @@
 import './style.css';
 
 // Write Javascript code!
-const [appDiv, inputValue, log] = ['output_json', 'input_json', 'log'].map(
-  (k) => document.getElementById(k)
-);
+const [appDiv, inputValue, log, nextButton] = [
+  'output_json',
+  'input_json',
+  'log',
+  'next',
+].map((k) => document.getElementById(k));
 appDiv.innerHTML = `<h1>JS Starter</h1>`;
 
 // interesting...map is not called for empty element (2)
@@ -32,7 +35,8 @@ function sort(o) {
 }
 
 function consolidate(types) {
-  if (!types || types.length < 2) return types;
+  if (!types.length) return false;
+  if (types.length < 2) return types;
   const result = {};
   for (let i = 0; i < types.length; i++) {
     Object.keys(types[i]).forEach((key) => {
@@ -105,6 +109,14 @@ function asInterface(name, o) {
 
 const samples = [
   {
+    a: [{ a: 1 }, { a: !1 }, { b: '' }, { b: 0, a: new Date() }],
+  },
+  {
+    array1: [0],
+    array2: ['', !0],
+    array3: ['', !0, 0],
+    array4: ['', !0, new Date()],
+    array5: ['', !0, 0, new Date()],
     items: [
       0,
       { a: 1, d: !0 },
@@ -143,4 +155,12 @@ inputValue.onkeyup = () => {
   } catch (ex) {
     log.innerText = ex;
   }
+};
+
+let sampleIndex = 0;
+nextButton.onclick = () => {
+  sampleIndex = (1 + sampleIndex) % samples.length;
+
+  inputValue.value = JSON.stringify(samples[sampleIndex], null, '  ');
+  appDiv.value = `${asInterface('ITest', samples[sampleIndex])}`;
 };
