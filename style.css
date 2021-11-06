@@ -29,5 +29,5 @@ textarea {
 }
 
 #log {
-  display: none;
+  display: block;
 }
