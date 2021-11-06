@@ -1,0 +1,41 @@
+h1,
+h2 {
+  font-family: Lato;
+}
+
+body {
+  color: #ccc;
+  background-color: #000;
+}
+
+textarea {
+  color: #2b2;
+  background-color: #111;
+  overflow: hidden;
+}
+
+.panel {
+  position: absolute;
+  width: 47%;
+  top: 4em;
+  bottom: 4em;
+}
+
+.left {
+  left: 2em;
+}
+
+.right {
+  right: 2em;
+}
+
+textarea {
+  position: absolute;
+  width: 100%;
+  top: 2em;
+  left: 0;
+  bottom: 0;
+}
+#log {
+  display: none;
+}
