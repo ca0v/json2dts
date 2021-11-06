@@ -9,10 +9,8 @@ const [appDiv, inputValue, log, nextButton] = [
 ].map((k) => document.getElementById(k));
 appDiv.innerHTML = `<h1>JS Starter</h1>`;
 
-// interesting...map is not called for empty element (2)
-log.innerText = [1, , 3].map((v, i) => `typeof ${i}=${typeof v}`).join(",");
-
 const samples = [
+  { a: [{ b: [1] }] },
   {
     a: [{ a: 1 }, { a: !1 }, { b: "" }, { b: 0, a: new Date() }],
   },
@@ -49,10 +47,7 @@ const samples = [
   },
 ];
 
-inputValue.value = JSON.stringify(samples[0], null, "  ");
-appDiv.value = `${asInterface("ITest", samples[0])}`;
-
-inputValue.onkeyup = () => {
+function render() {
   try {
     let o;
     eval(`o = ${inputValue.value}`);
@@ -60,12 +55,15 @@ inputValue.onkeyup = () => {
   } catch (ex) {
     log.innerText = ex;
   }
-};
+}
 
-let sampleIndex = 0;
+inputValue.onkeyup = () => render();
+
+let sampleIndex = -1;
 nextButton.onclick = () => {
   sampleIndex = (1 + sampleIndex) % samples.length;
-
   inputValue.value = JSON.stringify(samples[sampleIndex], null, "  ");
-  appDiv.value = `${asInterface("ITest", samples[sampleIndex])}`;
+  render();
 };
+
+nextButton.click();
