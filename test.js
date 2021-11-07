@@ -1,7 +1,7 @@
 import { assert, expect } from "chai";
 import {
   jsontodts,
-  typeOf,
+  asTypeDefinition,
   asInterface,
   consolidate,
   sort,
@@ -19,60 +19,143 @@ describe("test jsontodts", () => {
     assert.equal(unique([1, 2, 3, 1]).join(","), "1,2,3");
   });
 
-  it("test unionTypes", () => {
-    const union = unionTypes(["string", { a: "foo" }, { a: "bar", b: "foo" }]);
-    assert.equal(union, "string|{a:foo|bar,b:foo}");
+  it("tests asTypeDefinition primitives", () => {
+    assert.equal(asTypeDefinition(!0), "boolean");
+    assert.equal(asTypeDefinition(1), "number");
+    assert.equal(asTypeDefinition("a"), "string");
   });
 
-  it("test consolidate", () => {
-    const union = consolidate([{ a: "foo" }, { a: "bar", b: "foo" }]);
-    assert.equal(stringify(union), "{a:foo|bar,b:foo}");
+  it("tests asTypeDefinition simple objects", () => {
+    expect(asTypeDefinition({ a: !0 })).deep.equal({ a: "boolean" });
+    expect(asTypeDefinition({ a: 0 })).deep.equal({ a: "number" });
+    expect(asTypeDefinition({ a: "" })).deep.equal({ a: "string" });
   });
 
-  it("tests typeof", () => {
-    assert.equal(typeOf(!0), "boolean");
-    assert.equal(typeOf(1), "number");
-    assert.equal(typeOf("a"), "string");
+  it("tests asTypeDefinition primitive arrays", () => {
+    expect(asTypeDefinition([])).deep.equal([]);
+    expect(asTypeDefinition([1])).deep.equal(["number"]);
+    expect(asTypeDefinition([!0])).deep.equal(["boolean"]);
+    expect(asTypeDefinition([""])).deep.equal(["string"]);
+    expect(asTypeDefinition([1, 2, 3])).deep.equal(["number"], "[1,2,3]");
+  });
 
-    expect(typeOf({ a: !0 })).deep.equal("{a:boolean}");
-    expect(typeOf({ a: 0 })).deep.equal("{a:number}");
-    expect(typeOf({ a: "" })).deep.equal("{a:string}");
+  it("tests asTypeDefinition mixed arrays", () => {
+    expect(asTypeDefinition([1, !0, ""])).deep.equal([
+      "boolean",
+      "number",
+      "string",
+    ]);
 
-    assert.equal(typeOf([]), "Array<any>");
-    assert.equal(typeOf([1]), "Array<number>");
-    assert.equal(typeOf([!0]), "Array<boolean>");
-    assert.equal(typeOf([""]), "Array<string>");
-    assert.equal(typeOf([1, !0, ""]), "Array<boolean|number|string>");
-    assert.equal(typeOf([!1, 0, ""]), "Array<boolean|number|string>");
-    assert.equal(typeOf([[{ a: 1 }]]), "Array<Array<{a:number}>>");
+    expect(asTypeDefinition([[{ a: 1 }]])).deep.equal([[{ a: "number" }]]);
+  });
 
-    assert.equal(typeOf({ a: [{ b: [1] }] }), "{a:Array<{b:Array<number>}>}");
-    assert.equal(
-      typeOf({ a: [{ b: [1] }, { b: [1] }, { b: [!1] }, { b: [""] }] }),
+  it("tests asTypeDefinition complex objects", () => {
+    expect(asTypeDefinition({ a: [{ b: [1] }] })).deep.equal({
+      a: [{ b: ["number"] }],
+    });
+
+    expect(
+      asTypeDefinition({
+        a: [{ b: [1] }, { b: [1] }, { b: [!1] }, { b: [""] }],
+      }),
       "{a:Array<{b:Array<boolean>}|{b:Array<number>}|{b:Array<string>}>}"
     );
+  });
 
-    assert.equal(
-      typeOf({
-        a: [
-          { b: [{ c: 1, d: 1 }] },
-          { b: [1] },
-          { b: [{ c: 1, d: !1 }] },
-          { b: [{ c: 1, d: "" }] },
-        ],
-      }),
-      "{a:Array<{b:Array<any>}>"
+  it("tests asTypeDefinition deep", () => {
+    let v = asTypeDefinition({
+      a: [
+        { b: [{ c: 1, d: 1 }] },
+        { b: [1] },
+        { b: [{ c: 1, d: !1 }] },
+        { b: [{ c: 1, d: [1] }] },
+      ],
+    });
+    expect(v).deep.equal({
+      a: [
+        { b: [{ c: "number", d: "number" }] },
+        { b: ["number"] },
+        { b: [{ c: "number", d: "boolean" }] },
+        { b: [{ c: "number", d: ["number"] }] },
+      ],
+    });
+
+    v = asTypeDefinition({
+      a: [
+        { b: [{ c: 1, d: 1 }] },
+        { b: [{ c: 1, d: !1 }] },
+        { b: [{ c: 1, d: "" }] },
+      ],
+    });
+
+    expect(v).deep.equal({
+      a: [
+        { b: [{ c: "number", d: "number" }] },
+        { b: [{ c: "number", d: "boolean" }] },
+        { b: [{ c: "number", d: "string" }] },
+      ],
+    });
+  });
+
+  it("consolidate", () => {
+    expect(consolidate([{ b: ["string"] }, { b: ["number"] }])).deep.equal(
+      [{ b: ["number", "string"] }],
+      "consolidate number and string types on a simple object"
     );
+  });
 
-    assert.equal(
-      typeOf({
+  it("test consolidate single types", () => {
+    let c = consolidate([asTypeDefinition([])]);
+    expect(c).deep.equal([[]], "empty");
+
+    c = consolidate([asTypeDefinition([1, 2, 3])]);
+    expect(c).deep.equal([["number"]], "simple array");
+
+    c = consolidate([asTypeDefinition([1, !1])]);
+    expect(c).deep.equal([["boolean", "number"]], "mixed array");
+
+    c = consolidate([asTypeDefinition([1, 2, 3])]);
+    expect(c).deep.equal([["number"]], "simple array");
+  });
+
+  it("test consolidate two types", () => {
+    let types = [{ a: 1 }, { a: 1 }].map(asTypeDefinition);
+    let c = consolidate(types);
+    expect(c).deep.equal([{ a: ["number"] }], "duplicate primitive types");
+
+    types = [{ a: [1] }, { a: [1] }].map(asTypeDefinition);
+    c = consolidate(types);
+    expect(c).deep.equal([{ a: ["number"] }], "duplicate array types (number)");
+
+    types = [
+      {
         a: [
-          { b: [{ c: 1, d: 1 }] },
-          { b: [{ c: 1, d: !1 }] },
-          { b: [{ c: 1, d: "" }] },
+          {
+            b: "string",
+          },
         ],
-      }),
-      "{a:Array<{b:Array<{c:number,d:boolean}>}|{b:Array<{c:number,d:number}>}|{b:Array<{c:number,d:string}>}>}"
+      },
+      {
+        a: [
+          {
+            b: "number",
+          },
+        ],
+      },
+    ];
+    c = consolidate(types);
+    console.log(stringify(c));
+    expect(c).deep.equal(
+      [
+        {
+          a: [
+            {
+              b: ["number", "string"],
+            },
+          ],
+        },
+      ],
+      "deep mixed array types"
     );
   });
 });

@@ -1,5 +1,9 @@
 export function jsontodts(o) {
-  return asInterface(o);
+  return asInterface("ITest", o);
+}
+
+export function asInterface(name, o) {
+  return `interface ${name} ${stringify(asTypeDefinition(o), false)}`;
 }
 
 export function unique(items) {
@@ -19,6 +23,10 @@ function isObject(o) {
   return typeof o === "object";
 }
 
+function isDefined(o) {
+  return typeof o !== "undefined";
+}
+
 function isArray(o) {
   return Array.isArray(o);
 }
@@ -31,29 +39,57 @@ export function sort(o) {
   return result;
 }
 
+/**
+ *
+ */
 export function consolidate(types) {
-  if (!types.length) return false;
-  if (1 === types.length) return types[0];
-  const result = {};
-  for (let i = 0; i < types.length; i++) {
-    Object.keys(types[i]).forEach((key) => {
-      const newType = types[i][key];
-      if (!result[key]) {
-        result[key] = newType;
-        return;
-      }
-      if (result[key] === newType) {
-        return;
-      }
-      if (isString(newType) && isString(result[key])) {
-        result[key] += "|" + newType;
-        return;
-      }
-      console.log("consolidate", key, result[key], newType);
-      result[key] = consolidate([result[key], types[i][key]]);
-    });
+  if (!types?.length) return [];
+  const [head, ...tail] = types;
+  if (!tail.length) return [head];
+  if (isString(head)) {
+    const others = tail.filter((t) => t !== head);
+    return [head, ...consolidate(others)].sort();
   }
-  return isObject(result) ? sort(result) : result;
+
+  if (isArray(head)) {
+    let result = consolidate(head);
+    tail.forEach((t) => {
+      if (isArray(t)) {
+        result.push(...t);
+      }
+    });
+    result = consolidate(result);
+    return unique(result);
+  }
+  tail.forEach((t) => {
+    const keys = Object.keys(t);
+    keys.forEach((key) => {
+      head[key] = !isDefined(head[key])
+        ? t[key]
+        : consolidate([head[key], t[key]]);
+    });
+  });
+  return [head];
+}
+
+function isPrimitive(t) {
+  switch (t) {
+    case "number":
+    case "boolean":
+    case "string":
+    case "date":
+      return true;
+    case "array":
+    case "object":
+      return false;
+    default:
+      throw `unknown type: ${t}`;
+  }
+}
+
+function consolidateInto(t1, t2) {
+  if (isPrimitive(t1) && isPrimitive(t2)) return t1 == t2 ? [t1] : [t1, t2];
+  if (isPrimitive(t1) || isPrimitive(t2)) return [t1, t2];
 }
 
 export function unionTypes(types) {
@@ -63,20 +99,20 @@ export function unionTypes(types) {
 
   const complex = consolidate(types.filter((t) => typeof t === "object"));
 
-  if (complex) prims.push(stringify(complex));
+  prims.push(...complex.map(stringify).join("|"));
 
   const items = prims;
   if (items.length > 3) return "any";
   return items.sort().join("|");
 }
 
-export function typeOf(o) {
+export function asTypeDefinition(o) {
   const typeName = typeof o;
   switch (typeName) {
     case "":
+      return "undefined";
     case "undefined":
     case "null":
-      return "undefined";
     case "string":
     case "number":
     case "boolean":
@@ -84,22 +120,18 @@ export function typeOf(o) {
     case "object": {
       if (o instanceof Date) return "Date";
       if (isArray(o)) {
-        const allTypes = o.map(typeOf);
-        return `Array<${unionTypes(allTypes)}>`;
+        return unique(o.map(asTypeDefinition)).sort();
       }
+
       const keys = Object.keys(o);
       if (!keys.length) return "unknown";
       const result = {};
       keys.forEach((k) => {
-        result[k] = typeOf(o[k]);
+        result[k] = asTypeDefinition(o[k]);
       });
-      return stringify(result);
+      return result;
     }
     default:
       return "unknown";
   }
-}
-
-export function asInterface(name, o) {
-  return `interface ${name} ${stringify(typeOf(o), false)}`;
 }
