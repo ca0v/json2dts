@@ -57,9 +57,15 @@ describe("test jsontodts", () => {
     expect(
       asTypeDefinition({
         a: [{ b: [1] }, { b: [1] }, { b: [!1] }, { b: [""] }],
-      }),
-      "{a:Array<{b:Array<boolean>}|{b:Array<number>}|{b:Array<string>}>}"
-    );
+      })
+    ).deep.equal({
+      a: [
+        { b: ["number"] },
+        { b: ["number"] },
+        { b: ["boolean"] },
+        { b: ["string"] },
+      ],
+    });
   });
 
   it("tests asTypeDefinition deep", () => {
@@ -97,11 +103,24 @@ describe("test jsontodts", () => {
     });
   });
 
-  it("consolidate", () => {
-    expect(consolidate([{ b: ["string"] }, { b: ["number"] }])).deep.equal(
-      [{ b: ["number", "string"] }],
-      "consolidate number and string types on a simple object"
+  it("consolidate array of simple object types", () => {
+    expect(
+      consolidate([
+        { b: ["number"] },
+        { b: ["number"] },
+        { b: ["boolean"] },
+        { b: ["string"] },
+      ])
+    ).deep.equal(
+      [{ b: ["boolean", "number", "string"] }],
+      "multiple {b: primitive}"
     );
+  });
+
+  it("consolidate single objec type with duplicates", () => {
+    expect(
+      consolidate([{ a: [{ b: ["number"] }, { b: ["number"] }] }])
+    ).deep.equal([{ a: [{ b: ["number"] }] }], "a:[b:multiple primitives]");
   });
 
   it("test consolidate single types", () => {

@@ -39,9 +39,6 @@ export function sort(o) {
   return result;
 }
 
-/**
- *
- */
 export function consolidate(types) {
   if (!types?.length) return [];
   const [head, ...tail] = types;
@@ -52,7 +49,7 @@ export function consolidate(types) {
   }
 
   if (isArray(head)) {
-    let result = consolidate(head);
+    let result = [...head];
     tail.forEach((t) => {
       if (isArray(t)) {
         result.push(...t);
@@ -72,26 +69,6 @@ export function consolidate(types) {
   return [head];
 }
 
-function isPrimitive(t) {
-  switch (t) {
-    case "number":
-    case "boolean":
-    case "string":
-    case "date":
-      return true;
-    case "array":
-    case "object":
-      return false;
-    default:
-      throw `unknown type: ${t}`;
-  }
-}
-
-function consolidateInto(t1, t2) {
-  if (isPrimitive(t1) && isPrimitive(t2)) return t1 == t2 ? [t1] : [t1, t2];
-  if (isPrimitive(t1) || isPrimitive(t2)) return [t1, t2];
-}
-
 export function unionTypes(types) {
   if (!types?.length) return "any";
 
@@ -109,14 +86,6 @@ export function unionTypes(types) {
 export function asTypeDefinition(o) {
   const typeName = typeof o;
   switch (typeName) {
-    case "":
-      return "undefined";
-    case "undefined":
-    case "null":
-    case "string":
-    case "number":
-    case "boolean":
-      return typeName;
     case "object": {
       if (o instanceof Date) return "Date";
       if (isArray(o)) {
@@ -132,6 +101,6 @@ export function asTypeDefinition(o) {
       return result;
     }
     default:
-      return "unknown";
+      return typeName;
   }
 }
