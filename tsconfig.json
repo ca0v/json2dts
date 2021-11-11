@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
-    "target": "esnext"
-  }
+    "module": "esnext",
+    "target": "esnext",
+    "noImplicitAny": false,
+  },
+  "files": ["./test.ts"]
 }
