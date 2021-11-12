@@ -1,24 +1,14 @@
-function stringify(o) {
-  return JSON.stringify(o).replaceAll(
-    '"',
-    ""
-  );
-}
+import { log } from "./log.js";
+import { stringify } from "./stringify.js";
 
 function isPrimitive(o) {
   return typeof o !== "object";
 }
 
 export function typing(o) {
-  console.log(
-    "typing.in",
-    stringify(o)
-  );
+  log("typing.in", stringify(o));
   const result = _typing(o);
-  console.log(
-    "typing.out",
-    stringify(result)
-  );
+  log("typing.out", stringify(result));
   return result;
 }
 

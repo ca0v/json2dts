@@ -1,20 +1,12 @@
 import { deep } from "./deep.js";
 import { distinct } from "./distinct.js";
-
-function stringify(o) {
-  return JSON.stringify(o);
-}
+import { log } from "./log.js";
+import { stringify } from "./stringify.js";
 
 export function reduce(o: object) {
-  console.log(
-    "reduce.in",
-    stringify(o)
-  );
+  log("reduce.in", stringify(o));
   const result = _reduce(o);
-  console.log(
-    "reduce.out",
-    stringify(result)
-  );
+  log("reduce.out", stringify(result));
   return result;
 }
 

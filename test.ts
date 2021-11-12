@@ -3,9 +3,7 @@ import { typedef } from "./fun/typedef.js";
 import { deep } from "./fun/deep.js";
 import { reduce } from "./fun/reduce.js";
 import { typing } from "./fun/typing.js";
-
-let full = (o) =>
-  typing(reduce(typedef(o)));
+import { full } from "./fun/full.js";
 
 function log(o) {
   console.log(

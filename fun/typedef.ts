@@ -1,6 +1,5 @@
-function stringify(o) {
-  return JSON.stringify(o);
-}
+import { log } from "./log.js";
+import { stringify } from "./stringify.js";
 
 function isPrimitive(o) {
   return typeof o !== "object";
@@ -11,15 +10,9 @@ function reduce(o: Array<any>) {
 }
 
 export function typedef(o: object) {
-  console.log(
-    "typedef.in",
-    stringify(o)
-  );
+  log("typedef.in", stringify(o));
   const result = _typedef(o);
-  console.log(
-    "typedef.out",
-    stringify(result)
-  );
+  log("typedef.out", stringify(result));
   return result;
 }
 
