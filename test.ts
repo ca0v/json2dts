@@ -335,7 +335,7 @@ describe("object->typing", () => {
           a: [1],
         })
       )
-    ).equal("{a:[number]}");
+    ).equal("{a:Array<number>}");
   });
 
   it("moderate", () => {
@@ -348,7 +348,7 @@ describe("object->typing", () => {
         })
       )
     ).equal(
-      "{a:number,b:[boolean|number],c:[{d:boolean|number}]}"
+      "{a:number,b:Array<boolean|number>,c:Array<{d:boolean|number}>}"
     );
   });
 
@@ -367,7 +367,7 @@ describe("object->typing", () => {
         })
       )
     ).equal(
-      "{a:number,b:[boolean|number|string],c:[{d:boolean|number}]}"
+      "{a:number,b:Array<boolean|number|string>,c:Array<{d:boolean|number}>}"
     );
   });
 });

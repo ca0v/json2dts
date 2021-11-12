@@ -20,7 +20,7 @@ function _typing(o) {
       Array.isArray(o[0])
     ) {
       // this is an array
-      return [_typing(o[0])];
+      return `Array<${_typing(o[0])}>`;
     } else {
       // these are types
       return o
