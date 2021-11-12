@@ -4,5 +4,5 @@
     "target": "esnext",
     "noImplicitAny": false,
   },
-  "files": ["./test.ts"]
+  "files": ["./index.ts", "./test.ts"]
 }
