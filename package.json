@@ -18,7 +18,7 @@
     "watch:test": "npm run test -- -w -p -b",
     "watch:build": "npm run build -- -w",
     "dev": "npm-run-all -p watch:build watch:test",
-    "deploy": "npx esbuild --bundle --outfile=bin/index.js --allow-overwrite --format=esm bin/index.js"
+    "deploy": "npx esbuild --bundle --outfile=index.js --allow-overwrite --format=esm --minify --sourcemap --watch index.ts"
   },
   "description": "Converts json to a single typescript interface",
   "main": "index.js",

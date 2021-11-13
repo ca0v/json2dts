@@ -82,7 +82,10 @@ const samples = [
 function render() {
   try {
     let o;
-    eval(`o = ${inputValue.value}`);
+    // JSON.parse expects quoted key names
+    [eval][0](
+      `o = ${inputValue.value}`
+    );
     outputValue.value = `${myFull(o)}`;
   } catch (ex) {
     log.innerText = ex;
