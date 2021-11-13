@@ -1,9 +1,6 @@
+import { isPrimitive } from "./isDefined.js";
 import { log } from "./log.js";
 import { stringify } from "./stringify.js";
-
-function isPrimitive(o) {
-  return typeof o !== "object";
-}
 
 export function typing(o) {
   log("typing.in", stringify(o));

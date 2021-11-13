@@ -1,9 +1,6 @@
+import { isPrimitive } from "./isDefined.js";
 import { log } from "./log.js";
 import { stringify } from "./stringify.js";
-
-function isPrimitive(o) {
-  return typeof o !== "object";
-}
 
 function reduce(o: Array<any>) {
   return [...new Set(o)];

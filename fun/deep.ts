@@ -1,3 +1,7 @@
+import {
+  isPrimitive,
+  isDefined,
+} from "./isDefined";
 import { log } from "./log.js";
 import { stringify } from "./stringify.js";
 
@@ -10,14 +14,6 @@ export function deep(o1, o2) {
   const result = _deep(o1, o2);
   log("deep.out", stringify(result));
   return result;
-}
-
-function isDefined(o) {
-  return typeof o !== "undefined";
-}
-
-function isPrimitive(o) {
-  return typeof o !== "object";
 }
 
 export function _deep(o1, o2) {
