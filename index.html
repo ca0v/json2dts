@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="./style.css"/>
+    <link
+      rel="stylesheet"
+      href="./style.css"
+    />
   </head>
   <body>
-    <br />
-    <label
-      >Copy your typescript definition from here<br /><br />
-      <textarea readonly id="output_json"></textarea>
-    </label>
-    <br />
-    <label
-      >Paste your JSON here<br /><br />
-      <textarea id="input_json" placeholder="input"></textarea>
-    </label>
-
+    <div class="grid-container">
+      <textarea
+        class="output"
+        readonly
+        id="output_json"
+        placeholder="Copy your typescript definition from here"
+      ></textarea>
+      <textarea
+        class="input"
+        id="input_json"
+        placeholder="Paste your JSON here"
+      ></textarea>
+      <button class="tool" id="next">
+        Next Sample
+      </button>
+    </div>
     <div id="log">log</div>
 
-    <br />
-    <button id="next">Next Sample</button>
-    <script type="module" src="./bin/index.js"></script>
+    <script
+      type="module"
+      src="./bin/index.js"
+    ></script>
   </body>
 </html>
