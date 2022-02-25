@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "lib": ["ES2021"],
     "outDir": "./bin",
     "module": "esnext",
     "target": "esnext",
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
   "files": ["./index.ts", "./test.ts"]
 }

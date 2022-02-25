@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      * {
+        background-color: black;
+        color: white;
+        font-size: 2vw;
+      }
+      grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      textarea {
+        background-color: rgb(36, 17, 17);
+        resize: none;
+        padding: 1rem;
+        margin: 1rem;
+        height: 80vh;
+        width: calc(100%-2rem);
+      }
+      textarea:focus {
+        color: greenyellow;
+      }
+    </style>
+  </head>
+  <body>
+    <meta name="theme-color" content="#4285f4" />
+    <grid>
+      <label>Request</label>
+      <label>Response</label>
+      <textarea id="request" spellcheck="false"></textarea>
+      <textarea id="response" spellcheck="false"></textarea>
+    </grid>
+    <script type="module">
+      import { run } from "./xmlformatter.js";
+      run();
+    </script>
+  </body>
+</html>
