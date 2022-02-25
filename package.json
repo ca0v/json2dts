@@ -19,7 +19,7 @@
     "watch:build": "npm run build -- -w",
     "dev": "npm-run-all -p watch:build watch:test",
     "deploy": "npx esbuild --bundle --outfile=index.js --allow-overwrite --format=esm --minify --sourcemap --watch index.ts",
-    "build:xmlformatter": "esbuild --bundle --format=esm --minify --outfile=./prettier/xmlformatter.js --sourcemap --target=esnext --watch ./prettier/xmlformatter.ts",
+    "build:xmlformatter": "esbuild --bundle --format=esm --minify --outfile=./prettier/xmlformatter.js --sourcemap --target=esnext ./prettier/xmlformatter.ts",
     "build": "npm run build:xmlformatter"
   },
   "description": "Converts json to a single typescript interface",
